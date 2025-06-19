@@ -43,7 +43,6 @@ nav a:hover {
 nav a {
     margin: 15px;
     text-decoration: none;
-    color: #01823E;
 }
 section {
     margin: 10px;
@@ -53,8 +52,12 @@ section {
     display: flex;
     flex-wrap: nowrap;
     align-items: left;
-    justify-content: left;
-    padding: 0px 10;
+    justify-content: flex-start;
+    padding: 0px 10px;
+}
+#about {
+    font-family: "Builder Regular", Helvetica;
+    padding: 0px 10px;
 }
 .satuan {
     display: inline-block;
@@ -66,15 +69,18 @@ section {
     margin-top: 10px;
 }
 .tile {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px 0;
+    display: inline-table;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    margin: 5px;
 }
 .tile:hover {
     background-color: #191a1f;
-    border-radius: 15px;
-    padding: 5px;
-    transition: all .3s ease-out;
+    border-radius: 10px;
+    box-shadow: 0 0 0 8px #191a1f;
+    /*transform: scale(1.05);*/
+    z-index: 1;
+    transition: all 0.3s ease-out;
 }
 .name-left {
     text-decoration: none;

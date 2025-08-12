@@ -2,6 +2,82 @@
 <head>
     <title>Eggor's Canvas</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script>
+                        const API_KEY = "fwjFlNJj2Ei7625vMk9j19Wm3g8BCkGMCjacUu5XYQU/EY0VZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNkluTnBaeTB5TURJeExUQTNMVEV6VkRFNE9qVXhPalE1V2lJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaVlYTmxRWEJwUzJWNUlqb2labmRxUm14T1Ntb3lSV2szTmpJMWRrMXJPV294T1ZkdE0yYzRRa05yUjAxRGFtRmpWWFUxV0ZsUlZTOUZXVEJXSWl3aWIzZHVaWEpKWkNJNklqTXdNVEEwT0RJMU9EQWlMQ0poZFdRaU9pSlNiMkpzYjNoSmJuUmxjbTVoYkNJc0ltbHpjeUk2SWtOc2IzVmtRWFYwYUdWdWRHbGpZWFJwYjI1VFpYSjJhV05sSWl3aVpYaHdJam94TnpVMU1EQXpNRFF6TENKcFlYUWlPakUzTlRRNU9UazBORE1zSW01aVppSTZNVGMxTkRrNU9UUTBNMzAuRVFxTkx5d0swZnlvYk9xVVdnVGtPQjdmN2RoSWJVTWZpZGNtZmd3ZDhKQzNPUi1NWFB0S0JtREhYUUt4WE5yYlpILVp5Y2tBMnY0UlR4bGdwT0VqSS0xaUVCVVRNUm9SdWx0ODFMQURVQzg3QkxoVnRRU0VKQmFia2FjekN3bHY4Wmw0UkQtMWt6dWZXdWhQblV6QW1XeTV5SWQxWUpuT2RKaDFlaWYta1MtcEsweTNhLUxCX1VBaU16Vzhfb0ItRjZWemJjWnlrYU8wN1RJWHI4RjU5Mmx0cnZSZ0lySXdzbTlfS25UdVRnSTJmZDFwY2YtRVM5bkYtSUpJVG5aYUx0N0Y3dFVfR0FuVk1iR2lVdzFuSl83eUNNOVZDUmFQZGhqMmZQLTFNOWVxVFVfUU12bERyeXRNbF9tMVFFUmI1a25vM2dCZTB0XzhBcGpTQXRtLTFn";
+                        const PLACEHOLDER = "Media/sybau.jpg";
+
+                        async function generateAndGetImageUrl(userId, opts = { size: "150x150", format: "Png", IsCircular: false }) {
+                            const postUrl = `https://apis.roblox.com/cloud/v2/users/${userId}:generateThumbnail`;
+                            const postRes = await fetch(postUrl, {
+                                method: "POST",
+                                headers: {
+                                    "x-api-key": API_KEY,
+                                    "Content-type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    type: "Avatar",
+                                    size: opts.size,
+                                    format: opts.format,
+                                    isCircular: opts.isCircular
+                                })
+                        });
+
+                        if (!postRes.ok) throw new Error("Generate POST failed: " + postRes.status);
+                        const postJson = await postRes.json();
+                        console.log("POST response", postJson);
+
+                        const path = postJson.path;
+                        if (!path) throw new Error("No path returned from generate reqwest");
+
+                        const statusUrl = `https://apis.roblox.com/${path}`;
+
+                        const maxAttempts = 12;
+                        const delayMs = 500;
+                        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                            const statusRes = await fetch(statusUrl, {
+                                headers: { "x-api-key": API_KEY }
+                            });
+                            if (!statusRes.ok) throw new error("Status fetch failed: " + statusRes.status);
+                            const statusJson = await statusRes.json();
+                            console.log(`Status #${attempt}`, statusJson);
+
+                            if (statusJson.done && statusJson.response && statusJson.response.imageUrl) {
+                                return statusJson.response.imageUrl;
+                            }
+
+                            await new Promise(r => setTimeout(r, delayMs));
+                        }
+
+                        throw new error("Thumbnail not ready after polling");
+                    }
+                        
+                        document.querySelectorAll(".satuan").forEach(async (satuan) => {
+                            const link = satuan.querySelector("a");
+                            if (!link) return;
+
+                            const m = link.href.match(/users\/(d+)\//);
+                            if (!m) return;
+                            const userId = m[1];
+
+                            const img = satuan.querySelector("img.picture-profile");
+
+                            if (img) {
+                                img.src = PLACEHOLDER;
+
+                                img.onerror = function() { this.onerror = null; this.src = PLACEHOLDER; };
+                                img.width = 150;
+                                img.height = 150;
+                            }
+
+                            try {
+                                const imageUrl = await generateAndGetImageUrl(userId, { size: "150x150", format: "Png", isCircular: false});
+                                console.log("final imageurl for", userId, imageUrl);
+                            } catch (err) {
+                                console.error("Thumbnail error for", userId, err);
+                                if (img) img.src = PLACEHOLDER;
+                            }
+                        });
+                    </script>
 </head>
 <body style="background-color: rgb(18, 18, 21);">
     <header>
@@ -16,12 +92,12 @@
     </nav>
     <section>
         <h2>Profile Picture</h2>
-        <marquee direction="right" scrollamount="20" style="color: white; font-size: 20px;">
+        </smarquee direction="right" scrollamount="20" style="color: white; font-size: 20px;">
                 <div id="profile">
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/3010482580/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-B76A730CBEFCAB2A84863CF677F04D1F-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name";>
                                 <span>Eggor</span>
@@ -31,7 +107,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/3138755657/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-F636CAA4073C39288DC91047A840F550-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name";>
                                 <span>Elaina</span>
@@ -41,7 +117,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/1624183643/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-432328CA8CC583ED4B2590525238C263-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>OnlyAel</span>
@@ -51,7 +127,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/690056344/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-F1CBEAEA42DFCC04BBA58BEC9D48689E-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>KramzFrags</span>
@@ -61,7 +137,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/2753831715/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0B18C61BE1F106A410FC7282B8A1FA7D-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>Billylolwkwk</span>
@@ -71,7 +147,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/1761922148/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-C04D1BEDF480C4874854243F841B043E-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>Celoniadivi</span>
@@ -81,7 +157,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/1349154761/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-88479944854FB2652EAD1827CF9F2B94-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>SKIBIDIRAWR</span>
@@ -91,7 +167,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/7199015955/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0CF97D137D70B16A8F268D2A0656F1F6-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>Misa</span>
@@ -101,7 +177,7 @@
                     <div class="satuan">
                         <a href="https://www.roblox.com/users/178367706/profile" target="_blank">
                             <span>
-                                <img class="picture-profile" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-1E09787A4B9F95A04A2381B70C2F946E-Png/150/150/AvatarHeadshot/Webp/noFilter">
+                                <img class="picture-profile" src="">
                             </span>
                             <div class="name" style="text-align: center; margin-top: 10px;">
                                 <span>Maru</span>
@@ -109,7 +185,7 @@
                         </a>
                     </div>
                 </div>
-            </marquee>
+            >
         </section>
                 
     <section id="about">

@@ -1,0 +1,20 @@
+<?php
+
+$apiKey = "fwjFlNJj2Ei7625vMk9j19Wm3g8BCkGMCjacUu5XYQU/EY0VZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNkluTnBaeTB5TURJeExUQTNMVEV6VkRFNE9qVXhPalE1V2lJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaVlYTmxRWEJwUzJWNUlqb2labmRxUm14T1Ntb3lSV2szTmpJMWRrMXJPV294T1ZkdE0yYzRRa05yUjAxRGFtRmpWWFUxV0ZsUlZTOUZXVEJXSWl3aWIzZHVaWEpKWkNJNklqTXdNVEEwT0RJMU9EQWlMQ0poZFdRaU9pSlNiMkpzYjNoSmJuUmxjbTVoYkNJc0ltbHpjeUk2SWtOc2IzVmtRWFYwYUdWdWRHbGpZWFJwYjI1VFpYSjJhV05sSWl3aVpYaHdJam94TnpVMU1EQXpNRFF6TENKcFlYUWlPakUzTlRRNU9UazBORE1zSW01aVppSTZNVGMxTkRrNU9UUTBNMzAuRVFxTkx5d0swZnlvYk9xVVdnVGtPQjdmN2RoSWJVTWZpZGNtZmd3ZDhKQzNPUi1NWFB0S0JtREhYUUt4WE5yYlpILVp5Y2tBMnY0UlR4bGdwT0VqSS0xaUVCVVRNUm9SdWx0ODFMQURVQzg3QkxoVnRRU0VKQmFia2FjekN3bHY4Wmw0UkQtMWt6dWZXdWhQblV6QW1XeTV5SWQxWUpuT2RKaDFlaWYta1MtcEsweTNhLUxCX1VBaU16Vzhfb0ItRjZWemJjWnlrYU8wN1RJWHI4RjU5Mmx0cnZSZ0lySXdzbTlfS25UdVRnSTJmZDFwY2YtRVM5bkYtSUpJVG5aYUx0N0Y3dFVfR0FuVk1iR2lVdzFuSl83eUNNOVZDUmFQZGhqMmZQLTFNOWVxVFVfUU12bERyeXRNbF9tMVFFUmI1a25vM2dCZTB0XzhBcGpTQXRtLTFn";
+$userId = $_GET['userId'];
+$size = 150*150;
+
+$url = "https://thumbnails.roblox.com/v1/users/avatar-headshot";
+
+$url .= "?userIds=$userId&size=$size&format=PNG&shape=ROUND";
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+header('Content-Type: application/json');
+echo $response;
+?>

@@ -4,10 +4,10 @@
     <title>Eggor's Canvas</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script>
-                        const API_KEY = "fwjFlNJj2Ei7625vMk9j19Wm3g8BCkGMCjacUu5XYQU/EY0VZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNkluTnBaeTB5TURJeExUQTNMVEV6VkRFNE9qVXhPalE1V2lJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaVlYTmxRWEJwUzJWNUlqb2labmRxUm14T1Ntb3lSV2szTmpJMWRrMXJPV294T1ZkdE0yYzRRa05yUjAxRGFtRmpWWFUxV0ZsUlZTOUZXVEJXSWl3aWIzZHVaWEpKWkNJNklqTXdNVEEwT0RJMU9EQWlMQ0poZFdRaU9pSlNiMkpzYjNoSmJuUmxjbTVoYkNJc0ltbHpjeUk2SWtOc2IzVmtRWFYwYUdWdWRHbGpZWFJwYjI1VFpYSjJhV05sSWl3aVpYaHdJam94TnpVMU1EQXpNRFF6TENKcFlYUWlPakUzTlRRNU9UazBORE1zSW01aVppSTZNVGMxTkRrNU9UUTBNMzAuRVFxTkx5d0swZnlvYk9xVVdnVGtPQjdmN2RoSWJVTWZpZGNtZmd3ZDhKQzNPUi1NWFB0S0JtREhYUUt4WE5yYlpILVp5Y2tBMnY0UlR4bGdwT0VqSS0xaUVCVVRNUm9SdWx0ODFMQURVQzg3QkxoVnRRU0VKQmFia2FjekN3bHY4Wmw0UkQtMWt6dWZXdWhQblV6QW1XeTV5SWQxWUpuT2RKaDFlaWYta1MtcEsweTNhLUxCX1VBaU16Vzhfb0ItRjZWemJjWnlrYU8wN1RJWHI4RjU5Mmx0cnZSZ0lySXdzbTlfS25UdVRnSTJmZDFwY2YtRVM5bkYtSUpJVG5aYUx0N0Y3dFVfR0FuVk1iR2lVdzFuSl83eUNNOVZDUmFQZGhqMmZQLTFNOWVxVFVfUU12bERyeXRNbF9tMVFFUmI1a25vM2dCZTB0XzhBcGpTQXRtLTFn";
+                        document.addEventListener('DOMContentLoaded', function () {
                         const PLACEHOLDER = "Media/sybau.jpg";
 
-                        async function generateAndGetImageUrl(userId, opts = { size: "150x150", format: "Png", IsCircular: false }) {
+                        async function generateAndGetImageUri(userId, opts = { size: "150x150", format: "PNG", shape: "ROUND" }) {
                             const postUrl = `https://apis.roblox.com/cloud/v2/users/${userId}:generateThumbnail`;
                             const postRes = await fetch(postUrl, {
                                 method: "POST",
@@ -19,7 +19,7 @@
                                     type: "Avatar",
                                     size: opts.size,
                                     format: opts.format,
-                                    isCircular: opts.isCircular
+                                    shape: opts.shape
                                 })
                         });
 
@@ -42,8 +42,8 @@
                             const statusJson = await statusRes.json();
                             console.log(`Status #${attempt}`, statusJson);
 
-                            if (statusJson.done && statusJson.response && statusJson.response.imageUrl) {
-                                return statusJson.response.imageUrl;
+                            if (statusJson.done && statusJson.response && statusJson.response.imageUri) {
+                                return statusJson.response.imageUri;
                             }
 
                             await new Promise(r => setTimeout(r, delayMs));
@@ -56,9 +56,16 @@
                             const link = satuan.querySelector("a");
                             if (!link) return;
 
-                            const m = link.href.match(/users\/(d+)\//);
+                            const m = link.href.match(/users\/(\d+)\//);
                             if (!m) return;
                             const userId = m[1];
+
+                            fetch(`Thumbnail.php?userid=${userId}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    const imageUrl = data.data[0].imageUrl;
+                                    document.getElementById("avatar").src = imageUrl;
+                                });
 
                             const img = satuan.querySelector("img.picture-profile");
 
@@ -71,14 +78,15 @@
                             }
 
                             try {
-                                const imageUrl = await generateAndGetImageUrl(userId, { size: "150x150", format: "Png", isCircular: false});
-                                console.log("final imageurl for", userId, imageUrl);
+                                const imageUri = await generateAndGetImageUri(userId, { size: "150x150", format: "PNG", shape: "ROUND"});
+                                console.log("final ImageUri for", userId, imageUri);
                             } catch (err) {
                                 console.error("Thumbnail error for", userId, err);
                                 if (img) img.src = PLACEHOLDER;
                             }
                         });
-                    </script>
+        });
+    </script>
 </head>
 <body style="background-color: rgb(18, 18, 21);">
     <header>
@@ -210,6 +218,6 @@
             </div>
         </div>
     </section>
-</body>
+    </body>
 
 </html>

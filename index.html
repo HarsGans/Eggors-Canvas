@@ -5,6 +5,13 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script>
                         document.addEventListener('DOMContentLoaded', function () {
+                        fetch('getApiKey.php')
+                            .then(response => response.json())
+                            .then(data => {
+                                const API_KEY =data.apiKey;
+                                console.log("Got API Key:", API_KEY);
+                            })
+                        .catch(err => console.error("Error fetching API key:", err));
                         const PLACEHOLDER = "Media/sybau.jpg";
 
                         async function generateAndGetImageUri(userId, opts = { size: "150x150", format: "PNG", shape: "ROUND" }) {

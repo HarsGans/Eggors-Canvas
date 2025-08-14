@@ -5,11 +5,13 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script>
                         document.addEventListener("DOMContentLoaded", () => {
+                        let API_KEY;
+
                         fetch('getApiKey.php')
-                            .then(response => response.json())
-                            .then(data => {
-                                const API_KEY =data.apiKey;
-                                console.log("Got API Key:", API_KEY);
+                            .then(response => response.text())
+                            .then(key => {
+                                API_KEY =key.trim();
+                                console.log("Key Loaded: ", API_KEY);
                             })
                         .catch(err => console.error("Error fetching API key:", err));
 
@@ -202,7 +204,6 @@
                         </a>
                     </div>
                 </div>
-            >
         </section>
                 
     <section id="about">

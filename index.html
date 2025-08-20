@@ -1,232 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>Eggor's Canvas</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <script>
-                        document.addEventListener("DOMContentLoaded", () => {
-                        let API_KEY;
 
-                        fetch('getApiKey.php')
-                            .then(response => response.text())
-                            .then(key => {
-                                API_KEY =key.trim();
-                                console.log("Key Loaded: ", API_KEY);
-                            })
-                        .catch(err => console.error("Error fetching API key:", err));
+    <head>
+        <title>Eggor's Canvas</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script>
+            import { Workspace, Part } from "openblox";
 
-                        const PLACEHOLDER = "Media/sybau.jpg";
+                const workspace = new Workspace();
+                const part = new Part();
+                part.size = [4, 1, 2];
+                workspace.add(part);
 
-                        async function generateAndGetImageUri(userId, opts = { size: "150x150", format: "PNG", shape: "ROUND" }) {
-                            const postUrl = `https://apis.roblox.com/cloud/v2/users/${userId}:generateThumbnail`;
-                            const postRes = await fetch(postUrl, {
-                                method: "POST",
-                                headers: {
-                                    "x-api-key": API_KEY,
-                                    "Content-type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    type: "Avatar",
-                                    size: opts.size,
-                                    format: opts.format,
-                                    shape: opts.shape
-                                })
-                        });
+                console.log("Workspace now has:", workspace.children.length, "parts");
+        </script>
+    </head>
 
-                        if (!postRes.ok) throw new Error("Generate POST failed: " + postRes.status);
-                        const postJson = await postRes.json();
-                        console.log("POST response", postJson);
-
-                        const path = postJson.path;
-                        if (!path) throw new Error("No path returned from generate reqwest");
-
-                        const statusUrl = `https://apis.roblox.com/${path}`;
-
-                        const maxAttempts = 12;
-                        const delayMs = 500;
-                        for (let attempt = 0; attempt < maxAttempts; attempt++) {
-                            const statusRes = await fetch(statusUrl, {
-                                headers: { "x-api-key": API_KEY }
-                            });
-                            if (!statusRes.ok) throw new error("Status fetch failed: " + statusRes.status);
-                            const statusJson = await statusRes.json();
-                            console.log(`Status #${attempt}`, statusJson);
-
-                            if (statusJson.done && statusJson.response && statusJson.response.imageUri) {
-                                return statusJson.response.imageUri;
-                            }
-
-                            await new Promise(r => setTimeout(r, delayMs));
-                        }
-
-                        throw new error("Thumbnail not ready after polling");
-                    }
-                        
-                        document.querySelectorAll(".satuan").forEach(async (satuan) => {
-                            const link = satuan.querySelector("a");
-                            if (!link) return;
-
-                            const m = link.href.match(/users\/(\d+)\//);
-                            if (!m) return;
-                            const userId = m[1];
-
-                            fetch(`Thumbnail.php?userid=${userId}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    const imageUrl = data.data[0].imageUrl;
-                                    document.getElementById("avatar").src = imageUrl;
-                                });
-
-                            const img = satuan.querySelector("img.picture-profile");
-
-                            if (img) {
-                                img.src = PLACEHOLDER;
-
-                                img.onerror = function() { this.onerror = null; this.src = PLACEHOLDER; };
-                                img.width = 150;
-                                img.height = 150;
-                            }
-
-                            try {
-                                const imageUri = await generateAndGetImageUri(userId, { size: "150x150", format: "PNG", shape: "ROUND"});
-                                console.log("final ImageUri for", userId, imageUri);
-                            } catch (err) {
-                                console.error("Thumbnail error for", userId, err);
-                                if (img) img.src = PLACEHOLDER;
-                            }
-                        });
-        });
-    </script>
-</head>
-<body style="background-color: rgb(18, 18, 21);">
-    <header>
-        <h1>Eggor's Canvas Portfolio</h1>
-    </header>
-    <nav id="nav">
-        <a href="#">Home</a>
-        <a href="#about">About Me</a>
-        <a href="#projects">Projects</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#contact">Contact</a>
-    </nav>
-    <section>
-        <h2>Profile Picture</h2>
-        </smarquee direction="right" scrollamount="20" style="color: white; font-size: 20px;">
-                <div id="profile">
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/3010482580/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name";>
-                                <span>Eggor</span>
-                            </div>
-                        </a>
+    <body style="background-color: rgb(18, 18, 21);">
+        <header>
+            <h1>Eggor's Canvas Portfolio</h1>
+        </header>
+        <nav id="nav">
+            <a href="#">Home</a>
+            <a href="#about">About Me</a>
+            <a href="#projects">Projects</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <section>
+            <h2>Profile Picture</h2>
+            </smarquee direction="right" scrollamount="20" style="color: white; font-size: 20px;">
+                    <div id="profile">
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/3010482580/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name";>
+                                    <span>Eggor</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/3138755657/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name";>
+                                    <span>Elaina</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/1624183643/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>OnlyAel</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/690056344/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>KramzFrags</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/2753831715/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>Billylolwkwk</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/1761922148/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>Celoniadivi</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/1349154761/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>SKIBIDIRAWR</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/7199015955/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>Misa</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="satuan">
+                            <a href="https://www.roblox.com/users/178367706/profile" target="_blank">
+                                <span>
+                                    <img class="picture-profile" src="">
+                                </span>
+                                <div class="name" style="text-align: center; margin-top: 10px;">
+                                    <span>Maru</span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/3138755657/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name";>
-                                <span>Elaina</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/1624183643/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>OnlyAel</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/690056344/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>KramzFrags</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/2753831715/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>Billylolwkwk</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/1761922148/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>Celoniadivi</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/1349154761/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>SKIBIDIRAWR</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/7199015955/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>Misa</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="satuan">
-                        <a href="https://www.roblox.com/users/178367706/profile" target="_blank">
-                            <span>
-                                <img class="picture-profile" src="">
-                            </span>
-                            <div class="name" style="text-align: center; margin-top: 10px;">
-                                <span>Maru</span>
-                            </div>
-                        </a>
-                    </div>
+            </section>
+                    
+        <section id="about">
+            <h2>About Me</h2>
+            <div class="tile">
+                <span>
+                    <img class="picture" src="#">
+                </span>
+                <div class="name-left">
+                <span>Pesumajad Seine’il (1937)</span>
+                <p class="description">Andrus Johani (Estonian, 1906 – 1941)<p>
                 </div>
+            </div>
+            <div class="tile">
+                <span>
+                    <img class="picture" src="#">
+                </span>
+                <div class="name-left">
+                <span>Village Scene near Albany (1850)</span>
+                <p class="description">James McDougal Hart (American, 1828-1901)<p>
+                </div>
+            </div>
         </section>
-                
-    <section id="about">
-        <h2>About Me</h2>
-        <div class="tile">
-            <span>
-                <img class="picture" src="#">
-            </span>
-            <div class="name-left">
-            <span>Pesumajad Seine’il (1937)</span>
-            <p class="description">Andrus Johani (Estonian, 1906 – 1941)<p>
-            </div>
-        </div>
-        <div class="tile">
-            <span>
-                <img class="picture" src="#">
-            </span>
-            <div class="name-left">
-            <span>Village Scene near Albany (1850)</span>
-            <p class="description">James McDougal Hart (American, 1828-1901)<p>
-            </div>
-        </div>
-    </section>
     </body>
 
 </html>
